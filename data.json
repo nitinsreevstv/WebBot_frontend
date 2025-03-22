@@ -1,0 +1,51 @@
+{
+    "prompt": [
+    ["hi","hello","hey","good morning","good afternoon","good evening"],
+    ["how are you"],
+    ["what are you doing","what's going on","what's up"],
+    ["how old are you?"],
+    ["who are you","are you human","are you bot"],
+    ["who made you","who created you"],
+    ["What's you name","your name please","may i know your name"],
+    ["i love you"],
+    ["happy","good","fun","wonderful"],
+    ["bad","bored","tired"],
+    ["help me","tell me story","tell me joke"],
+    ["yes","ok","nice"],
+    ["bye","good bye","see you later"],
+    ["what should i eat today"],
+    ["bro","brother"],
+    ["what","why","how","when","where"],
+    ["no","maybe","no thanks"],
+    [""],
+    ["haha","lol","hehe","funny","joke"]
+    ],
+    "replies": [
+    ["hello","hey","hi","hi there"],
+    ["fine, how are you","pretty well, how are you"],
+    ["Nothing much","About to go to sleep","can you guess","I don't know actually"],
+    ["I am infinite"],
+    ["I am just a bot","I am a bot"],
+    ["I am a learner"],
+    ["I don't have a name","I am human made chat bot"],
+    ["I love you too","Me too"],
+    ["Glad to hear that"],
+    ["why","try watching TV"],
+    ["what about ?","Once upon a time.."],
+    ["Tell me something","Tell me a joke","Tell me something about yourself"],
+    ["Bye","good Bye","see you later"],
+    ["Chicken","pizza"],
+    ["Bro"],
+    ["Great Question"],
+    ["That's ok","I understand"],
+    ["Tell me something"],
+    ["Haha","Good one"]
+    ],
+    "alternatives": [
+        "I'm not sure about that.",
+        "Can you please elaborate?",
+        "Bro...",
+        "Same",
+        "Try again"
+    ]
+}
