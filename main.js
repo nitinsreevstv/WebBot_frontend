@@ -44,16 +44,19 @@ msgerForm.addEventListener("submit", event => {
     output(msgText);
 });
 
+
 function output(input) {
     let product;
     let text = input.toLowerCase().trim();
     
-    // Normalize the text by removing special characters
-    text = text.replace(/[^a-z0-9\s]/gi, ''); // Remove non-alphanumeric characters
-    console.log('Normalized input:', text); // Debug log
+    if (text === "") return; // Ignore empty input
 
-    // Check for a match and get the response
-    product = compare(prompt, replies, text) || "I didn't understand that."; // Default response
+    // Remove special characters
+    text = text.replace(/[^a-z0-9\s]/gi, ''); 
+    console.log('Normalized input:', text);
+
+    // Get chatbot response
+    product = compare(prompt, replies, text) || getRandomAlternative();
 
     const delay = text.split(" ").length * 100;
     setTimeout(() => {
@@ -61,19 +64,23 @@ function output(input) {
     }, delay);
 }
 
+function getRandomAlternative() {
+    return alternatives[Math.floor(Math.random() * alternatives.length)];
+}
+
+
 function compare(promptArray, repliesArray, string) {
     for (let x = 0; x < promptArray.length; x++) {
         for (let y = 0; y < promptArray[x].length; y++) {
-            console.log('Comparing:', string, 'with prompt:', promptArray[x][y]); // Debug log
-            // Use exact matching for cleaned input
-            if (promptArray[x][y] === string) {
+            if (string.includes(promptArray[x][y])) { // Allow partial matches
                 let replies = repliesArray[x];
                 return replies[Math.floor(Math.random() * replies.length)];
             }
         }
     }
-    return null; // Return null if no match found
+    return null; // If no match is found
 }
+
 
 function addChat(name,img, side, text){
     const msgHTML = `
@@ -82,7 +89,7 @@ function addChat(name,img, side, text){
         <div class = "msg-bubble">
             <div class = "msg-info">
                 <div class = "msg-info-name">${name}</div>
-                <div class = "msg-info-time">${FormData(new Date())}</div>
+                <div class = "msg-info-time">${formatDate(new Date())}</div>
             </div>
             <div class = "msg-text">${text}</div>
         </div>
@@ -95,13 +102,14 @@ function addChat(name,img, side, text){
 function get(selector, root = document){
     return root.querySelector(selector);
 }
-function FormData(date) {
+
+
+function formatDate(date) {
     let hours = date.getHours();
-    const minutes = "0" + date.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12; // Convert to 12-hour format
-    hours = hours ? hours : 12; // Adjust for 0 (midnight)
-    
+    let minutes = "0" + date.getMinutes();
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12; // Convert to 12-hour format
+
     return `${hours}:${minutes.slice(-2)} ${ampm}`;
 }
 
