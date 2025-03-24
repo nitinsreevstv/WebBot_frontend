@@ -171,3 +171,22 @@ function hideTypingIndicator() {
         typingIndicator.remove();
     }
 }
+const darkModeToggle = document.getElementById("dark-mode-toggle");
+
+if (localStorage.getItem("darkMode") === "enabled") {
+    document.body.classList.add("dark-mode");
+    darkModeToggle.innerHTML = '<i class="fa fa-sun"></i>';
+}
+
+// Dark Mode Toggle
+darkModeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+
+    if (document.body.classList.contains("dark-mode")) {
+        localStorage.setItem("darkMode", "enabled");
+        darkModeToggle.innerHTML = '<i class="fa fa-sun"></i>';
+    } else {
+        localStorage.setItem("darkMode", "disabled");
+        darkModeToggle.innerHTML = '<i class="fa fa-moon"></i>';
+    }
+});
