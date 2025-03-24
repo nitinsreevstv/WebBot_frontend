@@ -32,21 +32,6 @@ fetch('data.json')
 
 const robot = ["How do you do","I not human"];
 
-
-// function initializeChat() {
-//     const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
-
-//     chatHistory.forEach(msg => {
-//         addChat(msg.name, msg.img, msg.side, msg.text);
-//     });
-
-//     // Add welcome message only if the chat is empty
-//     if (chatHistory.length === 0) {
-//         const initialMessage = "Hi, Welcome to WebBot. Go ahead and send me a message.";
-//         addChat(BOT_NAME, BOT_IMG, "left", initialMessage);
-//     }
-// }
-
 function initializeChat() {
     const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
@@ -84,7 +69,6 @@ msgerForm.addEventListener("submit", event => {
     output(msgText);
 });
 
-
 function output(input) {
     let product;
     let text = input.toLowerCase().trim();
@@ -95,14 +79,19 @@ function output(input) {
     text = text.replace(/[^a-z0-9\s]/gi, ''); 
     console.log('Normalized input:', text);
 
+    // Show typing indicator
+    showTypingIndicator();
+
     // Get chatbot response
     product = compare(prompt, replies, text) || getRandomAlternative();
 
-    const delay = text.split(" ").length * 100;
+    const delay = text.split(" ").length * 300; // Adjust delay based on message length
     setTimeout(() => {
+        hideTypingIndicator();
         addChat(BOT_NAME, BOT_IMG, "left", product);
     }, delay);
 }
+
 
 function getRandomAlternative() {
     return alternatives[Math.floor(Math.random() * alternatives.length)];
@@ -180,3 +169,27 @@ document.getElementById("clear-chat-btn").addEventListener("click", () => {
         initializeChat(); // Restart chat with welcome message
     }
 });
+
+// Show typing indicator
+function showTypingIndicator() {
+    const typingHTML = `
+    <div class="msg left-msg typing-indicator">
+        <div class="msg-img" style="background-image: url(${BOT_IMG})"></div>
+        <div class="msg-bubble">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>`;
+
+    msgerChat.insertAdjacentHTML("beforeend", typingHTML);
+    msgerChat.scrollTop += 500;
+}
+
+// Hide typing indicator
+function hideTypingIndicator() {
+    const typingIndicator = document.querySelector(".typing-indicator");
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+}
