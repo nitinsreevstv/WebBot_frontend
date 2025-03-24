@@ -89,16 +89,30 @@ function getRandomAlternative() {
     return alternatives[Math.floor(Math.random() * alternatives.length)];
 }
 
-function compare(promptArray, repliesArray, string) {
+// function compare(promptArray, repliesArray, string) {
+//     for (let x = 0; x < promptArray.length; x++) {
+//         for (let y = 0; y < promptArray[x].length; y++) {
+//             if (string.includes(promptArray[x][y])) {
+//                 return repliesArray[x][Math.floor(Math.random() * repliesArray[x].length)];
+//             }
+//         }
+//     }
+//     return null;
+// }
+
+function compare(promptArray, repliesArray, userInput) {
     for (let x = 0; x < promptArray.length; x++) {
         for (let y = 0; y < promptArray[x].length; y++) {
-            if (string.includes(promptArray[x][y])) {
-                return repliesArray[x][Math.floor(Math.random() * repliesArray[x].length)];
+            let keyword = promptArray[x][y];
+            if (userInput.includes(keyword) || userInput.startsWith(keyword)) {
+                let replies = repliesArray[x];
+                return replies[Math.floor(Math.random() * replies.length)];
             }
         }
     }
     return null;
 }
+
 
 function addChat(name, img, side, text, saveToStorage = true) {
     if (!text.trim()) return;
