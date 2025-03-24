@@ -16,32 +16,62 @@ let alternatives = [];
 fetch('data.json')
     .then(response => response.json())
     .then(data => {
-        prompt = data.prompt;
-        replies = data.replies;
-        alternatives = data.alternatives;
+        prompt = data.prompt || [];
+        replies = data.replies || [];
+        alternatives = data.alternatives || ["I'm not sure how to respond."];
+        dataLoaded = true;
+        initializeChat();
     })
-    .catch(error => console.error('Error loading data:', error));
+    .catch(error => {
+        console.error('Error loading data:', error);
+        alternatives = ["Sorry, my brain isn't working right now!"];
+        dataLoaded = true;
+        initializeChat();
+    });
+
 
 const robot = ["How do you do","I not human"];
 
 
+// function initializeChat() {
+//     const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+
+//     chatHistory.forEach(msg => {
+//         addChat(msg.name, msg.img, msg.side, msg.text);
+//     });
+
+//     // Add welcome message only if the chat is empty
+//     if (chatHistory.length === 0) {
+//         const initialMessage = "Hi, Welcome to WebBot. Go ahead and send me a message.";
+//         addChat(BOT_NAME, BOT_IMG, "left", initialMessage);
+//     }
+// }
+
 function initializeChat() {
     const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
+    // ✅ Ensure the chat UI is cleared to prevent duplication
+    msgerChat.innerHTML = ""; 
+
+    // ✅ Ensure we do not re-add messages already present in the UI
+    const existingMessages = new Set();
+    
     chatHistory.forEach(msg => {
-        addChat(msg.name, msg.img, msg.side, msg.text);
+        // Generate a unique key for each message
+        const messageKey = `${msg.name}-${msg.text}-${msg.time}`;
+        
+        if (!existingMessages.has(messageKey)) {
+            addChat(msg.name, msg.img, msg.side, msg.text);
+            existingMessages.add(messageKey); // ✅ Track added messages
+        }
     });
 
-    // Add welcome message only if the chat is empty
+    // ✅ Ensure welcome message is added only if there is no chat history
     if (chatHistory.length === 0) {
         const initialMessage = "Hi, Welcome to WebBot. Go ahead and send me a message.";
         addChat(BOT_NAME, BOT_IMG, "left", initialMessage);
     }
 }
-
-
-// Run the initialization function on page load
-document.addEventListener("DOMContentLoaded", initializeChat);
 
 
 msgerForm.addEventListener("submit", event => {
@@ -91,15 +121,16 @@ function compare(promptArray, repliesArray, string) {
     return null; // If no match is found
 }
 
-
 function addChat(name, img, side, text) {
+    const time = formatDate(new Date()); // Get time of message
+
     const msgHTML = `
     <div class="msg ${side}-msg">
         <div class="msg-img" style="background-image: url(${img})"></div>
         <div class="msg-bubble">
             <div class="msg-info">
                 <div class="msg-info-name">${name}</div>
-                <div class="msg-info-time">${formatDate(new Date())}</div>
+                <div class="msg-info-time">${time}</div>
             </div>
             <div class="msg-text">${text}</div>
         </div>
@@ -108,8 +139,12 @@ function addChat(name, img, side, text) {
     msgerChat.insertAdjacentHTML("beforeend", msgHTML);
     msgerChat.scrollTop += 500;
 
-    // Save to local storage
-    saveMessage({ name, img, side, text, time: formatDate(new Date()) });
+    // Save chat to localStorage
+    const storedChat = localStorage.getItem("chatHistory");
+    const chatHistory = storedChat ? JSON.parse(storedChat) : [];
+    chatHistory.push({ name, img, side, text, time });
+
+    localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
 }
 
 
@@ -120,15 +155,16 @@ function get(selector, root = document){
 
 function formatDate(date) {
     let hours = date.getHours();
-    let minutes = "0" + date.getMinutes();
-    let ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12 || 12; // Convert to 12-hour format
-
-    return `${hours}:${minutes.slice(-2)} ${ampm}`;
+    let minutes = date.getMinutes();
+    let ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12; // Convert 0 to 12 for 12-hour format
+    minutes = minutes < 10 ? "0" + minutes : minutes; // Ensure two-digit minutes
+    return `${hours}:${minutes} ${ampm}`;
 }
 
-function random(min , max){
-    return Math.floor(Maths.random() * (max - min) + min);
+
+function random(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
 }
 
 function saveMessage(message) {
@@ -139,39 +175,8 @@ function saveMessage(message) {
 
 document.getElementById("clear-chat-btn").addEventListener("click", () => {
     if (confirm("Are you sure you want to clear the chat?")) {
-        localStorage.removeItem("chatHistory"); // Remove stored chat history
-        msgerChat.innerHTML = ""; // Clear chat display
-        setTimeout(() => location.reload(), 300); // Refresh the page after clearing
+        localStorage.removeItem("chatHistory"); // Clear localStorage
+        msgerChat.innerHTML = ""; // Clear chat UI
+        initializeChat(); // Restart chat with welcome message
     }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

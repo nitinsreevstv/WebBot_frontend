@@ -152,20 +152,21 @@ body{
     background-color: #fcfcfe;
 }
 #clear-chat-btn {
-    background: transparent;
+    background: none;
+    border: none;
     color: #666;
-    border: 1px solid #ccc;
-    padding: 6px 12px;
-    font-size: 14px;
-    border-radius: 5px;
+    font-size: 18px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: color 0.3s ease;
     margin-left: auto;
+    padding: 5px 10px;
 }
 
 #clear-chat-btn:hover {
-    background: #edc18d;  /* Matches input area color */
-    color: white;
-    border-color: #edc18d;
+    color: #edc18d; /* Matches WebBot color theme */
+}
+
+#clear-chat-btn i {
+    pointer-events: none; /* Prevents accidental clicks on the icon */
 }
 
