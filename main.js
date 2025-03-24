@@ -26,9 +26,19 @@ const robot = ["How do you do","I not human"];
 
 
 function initializeChat() {
-    const initialMessage = "Hi, Welcome to WebBot. Go ahead and send me a message.";
-    addChat(BOT_NAME, BOT_IMG, "left", initialMessage);
+    const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+
+    chatHistory.forEach(msg => {
+        addChat(msg.name, msg.img, msg.side, msg.text);
+    });
+
+    // Add welcome message only if the chat is empty
+    if (chatHistory.length === 0) {
+        const initialMessage = "Hi, Welcome to WebBot. Go ahead and send me a message.";
+        addChat(BOT_NAME, BOT_IMG, "left", initialMessage);
+    }
 }
+
 
 // Run the initialization function on page load
 document.addEventListener("DOMContentLoaded", initializeChat);
@@ -82,22 +92,26 @@ function compare(promptArray, repliesArray, string) {
 }
 
 
-function addChat(name,img, side, text){
+function addChat(name, img, side, text) {
     const msgHTML = `
-    <div class ="msg ${side}-msg">
-        <div class = "msg-img" style="background-image:url(${img})"></div>
-        <div class = "msg-bubble">
-            <div class = "msg-info">
-                <div class = "msg-info-name">${name}</div>
-                <div class = "msg-info-time">${formatDate(new Date())}</div>
+    <div class="msg ${side}-msg">
+        <div class="msg-img" style="background-image: url(${img})"></div>
+        <div class="msg-bubble">
+            <div class="msg-info">
+                <div class="msg-info-name">${name}</div>
+                <div class="msg-info-time">${formatDate(new Date())}</div>
             </div>
-            <div class = "msg-text">${text}</div>
+            <div class="msg-text">${text}</div>
         </div>
     </div>`;
 
     msgerChat.insertAdjacentHTML("beforeend", msgHTML);
     msgerChat.scrollTop += 500;
+
+    // Save to local storage
+    saveMessage({ name, img, side, text, time: formatDate(new Date()) });
 }
+
 
 function get(selector, root = document){
     return root.querySelector(selector);
@@ -116,6 +130,21 @@ function formatDate(date) {
 function random(min , max){
     return Math.floor(Maths.random() * (max - min) + min);
 }
+
+function saveMessage(message) {
+    let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+    chatHistory.push(message);
+    localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+}
+
+document.getElementById("clear-chat-btn").addEventListener("click", () => {
+    if (confirm("Are you sure you want to clear the chat?")) {
+        localStorage.removeItem("chatHistory"); // Remove stored chat history
+        msgerChat.innerHTML = ""; // Clear chat display
+        setTimeout(() => location.reload(), 300); // Refresh the page after clearing
+    }
+});
+
 
 
 

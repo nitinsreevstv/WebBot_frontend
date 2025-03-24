@@ -151,3 +151,21 @@ body{
 .msger-chat{
     background-color: #fcfcfe;
 }
+#clear-chat-btn {
+    background: transparent;
+    color: #666;
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: auto;
+}
+
+#clear-chat-btn:hover {
+    background: #edc18d;  /* Matches input area color */
+    color: white;
+    border-color: #edc18d;
+}
+
