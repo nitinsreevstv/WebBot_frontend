@@ -67,7 +67,42 @@ msgerForm.addEventListener("submit", event => {
     output(msgText);
 });
 
-function output(input) {
+async function fetchWikipediaSummary(query) {
+    const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.extract) {
+            return {
+                title: data.title,
+                extract: data.extract,
+                image: data.thumbnail ? data.thumbnail.source : null,
+                link: data.content_urls.desktop.page
+            };
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error("Wikipedia API Error:", error);
+        return null;
+    }
+}
+
+async function fetchJoke() {
+    try {
+        const response = await fetch("https://official-joke-api.appspot.com/random_joke");
+        const data = await response.json();
+        return `${data.setup} 😂 ${data.punchline}`;
+    } catch (error) {
+        console.error("Joke API Error:", error);
+        return "I tried to find a joke, but my humor module is offline! 🤖";
+    }
+}
+
+
+async function output(input) {
     let text = input.toLowerCase().trim();
     if (!text) return;
 
@@ -75,16 +110,50 @@ function output(input) {
 
     showTypingIndicator();
 
+    // 🔹 Enhanced Wikipedia query detection
+    const wikiPattern = /^(what is|who is|tell me about|define) (.+)/;
+    const match = text.match(wikiPattern);
+
+    if (match) {
+        const query = match[2].trim(); // Extracted topic
+        const wikiData = await fetchWikipediaSummary(query);
+
+        if (wikiData) {
+            let botMessage = `<strong>${wikiData.title}</strong><br>${wikiData.extract}<br><a href="${wikiData.link}" target="_blank">Read more</a>`;
+            if (wikiData.image) {
+                botMessage = `<img src="${wikiData.image}" alt="${wikiData.title}" width="150"><br>` + botMessage;
+            }
+            hideTypingIndicator();
+            addChat(BOT_NAME, BOT_IMG, "left", botMessage, true);
+            return;
+        }
+    }
+
+    // 🔹 Joke API Integration
+    if (text.includes("joke") || text.includes("tell me a joke")) {
+        try {
+            const response = await fetch("https://v2.jokeapi.dev/joke/Any");
+            const jokeData = await response.json();
+            let jokeText = jokeData.type === "twopart" 
+                ? `${jokeData.setup}<br><strong>${jokeData.delivery}</strong>` 
+                : jokeData.joke;
+            hideTypingIndicator();
+            addChat(BOT_NAME, BOT_IMG, "left", jokeText, true);
+            return;
+        } catch (error) {
+            console.error("Joke API Error:", error);
+        }
+    }
+
     let product = compare(prompt, replies, text) || getRandomAlternative();
     if (!product) product = "I'm not sure how to respond.";
 
-    const delay = text.split(" ").length * 300;
+    const delay = Math.min(3000, text.length * 150); // 🔹 Improved delay calculation
     setTimeout(() => {
         hideTypingIndicator();
         addChat(BOT_NAME, BOT_IMG, "left", product, true);
     }, delay);
 }
-
 function getRandomAlternative() {
     return alternatives[Math.floor(Math.random() * alternatives.length)];
 }
