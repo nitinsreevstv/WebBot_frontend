@@ -110,6 +110,27 @@ async function output(input) {
 
     showTypingIndicator();
 
+    // 🔹 Check if user is providing their name
+    const namePattern = /^(my name is|i am|call me) (.+)/i;
+    const nameMatch = text.match(namePattern);
+
+    if (nameMatch) {
+        let userName = nameMatch[2].trim();
+        userName = userName.charAt(0).toUpperCase() + userName.slice(1); // Capitalize first letter
+        localStorage.setItem("userName", userName); // Store in localStorage
+        hideTypingIndicator();
+        addChat(BOT_NAME, BOT_IMG, "left", `Nice to meet you, ${userName}! 😊`, true);
+        return;
+    }
+
+    // 🔹 Retrieve stored user name (ensure it's not "User" if unknown)
+    let userName = localStorage.getItem("userName");
+    if (!userName) {
+        userName = ""; // Empty string if no name is set
+    } else {
+        userName = userName.charAt(0).toUpperCase() + userName.slice(1); // Capitalize if found
+    }
+
     // 🔹 Enhanced Wikipedia query detection
     const wikiPattern = /^(what is|who is|tell me about|define) (.+)/;
     const match = text.match(wikiPattern);
@@ -129,31 +150,18 @@ async function output(input) {
         }
     }
 
-    // 🔹 Joke API Integration
-    if (text.includes("joke") || text.includes("tell me a joke")) {
-        try {
-            const response = await fetch("https://v2.jokeapi.dev/joke/Any");
-            const jokeData = await response.json();
-            let jokeText = jokeData.type === "twopart" 
-                ? `${jokeData.setup}<br><strong>${jokeData.delivery}</strong>` 
-                : jokeData.joke;
-            hideTypingIndicator();
-            addChat(BOT_NAME, BOT_IMG, "left", jokeText, true);
-            return;
-        } catch (error) {
-            console.error("Joke API Error:", error);
-        }
-    }
-
     let product = compare(prompt, replies, text) || getRandomAlternative();
     if (!product) product = "I'm not sure how to respond.";
 
     const delay = Math.min(3000, text.length * 150); // 🔹 Improved delay calculation
     setTimeout(() => {
         hideTypingIndicator();
-        addChat(BOT_NAME, BOT_IMG, "left", product, true);
+        const response = userName ? `${userName}, ${product}` : product; // 🔹 Avoid "User"
+        addChat(BOT_NAME, BOT_IMG, "left", response, true);
     }, delay);
 }
+
+
 function getRandomAlternative() {
     return alternatives[Math.floor(Math.random() * alternatives.length)];
 }
@@ -171,17 +179,23 @@ function compare(promptArray, repliesArray, userInput) {
     return null;
 }
 
+
 function addChat(name, img, side, text, saveToStorage = true) {
     if (!text.trim()) return;
 
     const time = formatDate(new Date());
+    let userNameStored = localStorage.getItem("userName") || ""; // Get stored name
+    userNameStored = userNameStored.charAt(0).toUpperCase() + userNameStored.slice(1); // Capitalize
+
+    // Ensure the bot does not call the user "User" if the name is not set
+    const displayName = (side === "right") ? (userNameStored || "You") : BOT_NAME;
 
     const msgHTML = `
     <div class="msg ${side}-msg">
         <div class="msg-img" style="background-image: url(${img})"></div>
         <div class="msg-bubble">
             <div class="msg-info">
-                <div class="msg-info-name">${name}</div>
+                <div class="msg-info-name">${displayName}</div>
                 <div class="msg-info-time">${time}</div>
             </div>
             <div class="msg-text">${text}</div>
@@ -193,7 +207,7 @@ function addChat(name, img, side, text, saveToStorage = true) {
 
     if (saveToStorage) {
         let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
-        chatHistory.push({ name, img, side, text, time });
+        chatHistory.push({ name: displayName, img, side, text, time });
         localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
     }
 }
