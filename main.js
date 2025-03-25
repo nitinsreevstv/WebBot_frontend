@@ -192,61 +192,85 @@ darkModeToggle.addEventListener("click", () => {
         darkModeToggle.innerHTML = '<i class="fa fa-moon"></i>';
     }
 });
+
 const micButton = document.getElementById("mic-btn");
-const micIcon = micButton.querySelector("i");
 const inputField = document.querySelector(".msger-input");
 const sendButton = document.querySelector(".msger-send-btn");
-const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 recognition.continuous = false;
 recognition.interimResults = false;
 recognition.lang = "en-US";
 
-let isMicActive = false; // Track mic state
+let isMicActive = false; // ✅ Tracks mic state
+let manuallyStopped = false; // ✅ Prevents unintended restart
 
-// Toggle mic activation only when clicking the mic button
+// ✅ Toggle Mic Only on Button Click
 micButton.addEventListener("click", () => {
     if (isMicActive) {
-        recognition.stop();
+        stopMic(true); // 🔹 Pass true to mark as manually stopped
     } else {
-        micButton.classList.add("listening");
-        isMicActive = true;
-        recognition.start();
+        startMic();
     }
 });
 
-// Speech recognition result handler
+// ✅ Function to Start Mic
+function startMic() {
+    if (manuallyStopped) return; // 🚫 Prevent mic from starting after manual stop
+
+    isMicActive = true;
+    micButton.classList.add("listening");
+    recognition.start();
+    console.log("Mic started");
+}
+
+// ✅ Function to Stop Mic
+function stopMic(manual = false) {
+    if (isMicActive) {
+        recognition.stop();
+        console.log("Mic stopped");
+    }
+    isMicActive = false;
+    micButton.classList.remove("listening");
+
+    if (manual) {
+        manuallyStopped = true; // ✅ Prevents auto-restart
+        setTimeout(() => (manuallyStopped = false), 1000); // ✅ Reset flag after some time
+    }
+}
+
+// ✅ Speech Recognition Result Handling
 recognition.onresult = (event) => {
     inputField.value = event.results[0][0].transcript;
-    micButton.classList.remove("listening");
-    isMicActive = false; // Reset mic state after getting input
+    stopMic(true);
 };
 
-// When speech recognition stops
+// ✅ Ensure Mic Fully Stops When Recognition Ends
 recognition.onend = () => {
-    micButton.classList.remove("listening");
-    isMicActive = false; // Ensure mic does not auto-restart
+    if (!manuallyStopped) {
+        console.log("Mic ended naturally.");
+        isMicActive = false; // 🔹 Ensure state is reset
+    } else {
+        console.log("Mic manually stopped, not restarting.");
+    }
 };
 
-// Handle errors
+// ✅ Handle Speech Recognition Errors
 recognition.onerror = (event) => {
     console.error("Speech recognition error:", event.error);
-    micButton.classList.remove("listening");
-    isMicActive = false; // Prevent looping errors
+    stopMic(true); // 🔹 Ensure mic stops on error
 };
 
-// Prevent the mic from restarting when sending a message
-sendButton.addEventListener("click", (event) => {
-    if (isMicActive) {
-        recognition.stop(); // Ensure mic stops when sending a message
-        isMicActive = false; // Prevent reactivation
-        micButton.classList.remove("listening"); // Reset button state
+// 🚫 Prevent Mic from Restarting When Sending Message
+sendButton.addEventListener("click", () => {
+    console.log("Send button clicked, stopping mic...");
+    stopMic(true);
+});
+
+// 🚫 Prevent Mic from Restarting When Pressing Enter
+inputField.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        console.log("Enter key pressed, stopping mic...");
+        stopMic(true);
     }
 });
-recognition.onend = () => {
-    micButton.classList.remove("listening");
-    isMicActive = false; // Prevent auto-restart
-    recognition.abort(); // Forcefully stop any ongoing recognition
-};
-
-
