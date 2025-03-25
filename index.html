@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/070428bd88.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <title>ChatBot</title>
 </head>
 <body>
@@ -25,7 +26,10 @@
         <main class="msger-chat"></main>
         <form class="msger-inputarea">
              <input type="text" class="msger-input" placeholder="Enter your message...">
-             <button type="submit" class="msger-send-btn"><i class="fa fa-paper-plane"></i></button>
+             <button id="mic-btn">
+                <i class="fa-solid fa-microphone"></i>
+            </button>
+            <button type="submit" class="msger-send-btn"><i class="fa fa-paper-plane"></i></button>
         </form>
     </section>
     <script src="main.js"></script>

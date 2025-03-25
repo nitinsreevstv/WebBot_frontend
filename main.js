@@ -89,17 +89,6 @@ function getRandomAlternative() {
     return alternatives[Math.floor(Math.random() * alternatives.length)];
 }
 
-// function compare(promptArray, repliesArray, string) {
-//     for (let x = 0; x < promptArray.length; x++) {
-//         for (let y = 0; y < promptArray[x].length; y++) {
-//             if (string.includes(promptArray[x][y])) {
-//                 return repliesArray[x][Math.floor(Math.random() * repliesArray[x].length)];
-//             }
-//         }
-//     }
-//     return null;
-// }
-
 function compare(promptArray, repliesArray, userInput) {
     for (let x = 0; x < promptArray.length; x++) {
         for (let y = 0; y < promptArray[x].length; y++) {
@@ -112,7 +101,6 @@ function compare(promptArray, repliesArray, userInput) {
     }
     return null;
 }
-
 
 function addChat(name, img, side, text, saveToStorage = true) {
     if (!text.trim()) return;
@@ -204,3 +192,61 @@ darkModeToggle.addEventListener("click", () => {
         darkModeToggle.innerHTML = '<i class="fa fa-moon"></i>';
     }
 });
+const micButton = document.getElementById("mic-btn");
+const micIcon = micButton.querySelector("i");
+const inputField = document.querySelector(".msger-input");
+const sendButton = document.querySelector(".msger-send-btn");
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+recognition.continuous = false;
+recognition.interimResults = false;
+recognition.lang = "en-US";
+
+let isMicActive = false; // Track mic state
+
+// Toggle mic activation only when clicking the mic button
+micButton.addEventListener("click", () => {
+    if (isMicActive) {
+        recognition.stop();
+    } else {
+        micButton.classList.add("listening");
+        isMicActive = true;
+        recognition.start();
+    }
+});
+
+// Speech recognition result handler
+recognition.onresult = (event) => {
+    inputField.value = event.results[0][0].transcript;
+    micButton.classList.remove("listening");
+    isMicActive = false; // Reset mic state after getting input
+};
+
+// When speech recognition stops
+recognition.onend = () => {
+    micButton.classList.remove("listening");
+    isMicActive = false; // Ensure mic does not auto-restart
+};
+
+// Handle errors
+recognition.onerror = (event) => {
+    console.error("Speech recognition error:", event.error);
+    micButton.classList.remove("listening");
+    isMicActive = false; // Prevent looping errors
+};
+
+// Prevent the mic from restarting when sending a message
+sendButton.addEventListener("click", (event) => {
+    if (isMicActive) {
+        recognition.stop(); // Ensure mic stops when sending a message
+        isMicActive = false; // Prevent reactivation
+        micButton.classList.remove("listening"); // Reset button state
+    }
+});
+recognition.onend = () => {
+    micButton.classList.remove("listening");
+    isMicActive = false; // Prevent auto-restart
+    recognition.abort(); // Forcefully stop any ongoing recognition
+};
+
+
