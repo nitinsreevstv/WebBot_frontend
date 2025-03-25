@@ -226,6 +226,11 @@ function compare(promptArray, repliesArray, userInput) {
 function addChat(name, img, side, text, saveToStorage = true) {
     if (!text.trim()) return;
 
+    // Speak the bot's message if it's the bot speaking
+    if (name === "BOT") {
+        speak(text);
+    }
+
     const time = formatDate(new Date());
     let userNameStored = localStorage.getItem("userName") || ""; // Get stored name
     userNameStored = userNameStored.charAt(0).toUpperCase() + userNameStored.slice(1); // Capitalize
@@ -400,3 +405,19 @@ inputField.addEventListener("keydown", (event) => {
         stopMic(true);
     }
 });
+function speak(text) {
+    const cleanText = text
+        .replace(/https?:\/\/\S+/g, '') // Remove links
+        .replace(/[\u{1F600}-\u{1F6FF}]/gu, '') // Remove emojis
+        .replace(/[^a-zA-Z0-9.,!? ]/g, ''); // Remove other special characters
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = "en-US"; // Set language
+    utterance.rate = 1; // Adjust speed (1 is normal)
+    utterance.pitch = 1; // Adjust pitch (1 is normal)
+    speechSynthesis.speak(utterance);
+}
+
+
+
+
