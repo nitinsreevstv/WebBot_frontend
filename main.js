@@ -114,6 +114,49 @@ async function output(input) {
     const namePattern = /^(my name is|i am|call me) (.+)/i;
     const nameMatch = text.match(namePattern);
 
+    if (text.includes("fun fact") || text.includes("tell me a fact") || text.includes("random fact")) {
+        try {
+            const response = await fetch("https://uselessfacts.jsph.pl/api/v2/facts/random?language=en");
+            
+            if (!response.ok) throw new Error("Failed to fetch fun fact.");
+            
+            const data = await response.json();
+            const fact = data.text;
+    
+            setTimeout(() => {
+                hideTypingIndicator();
+                addChat(BOT_NAME, BOT_IMG, "left", `Here's a fun fact: 🤯<br><strong>${fact}</strong>`, true);
+            }, 1500);
+        } catch (error) {
+            console.error("Error fetching fun fact:", error);
+            hideTypingIndicator();
+            addChat(BOT_NAME, BOT_IMG, "left", "Oops! I couldn't fetch a fun fact right now. Try again later. 😔", true);
+        }
+        return;
+    }
+    
+    if (text.includes("joke") || text.includes("tell me a joke") || text.includes("funny")) {
+        try {
+            const response = await fetch("https://official-joke-api.appspot.com/random_joke");
+    
+            if (!response.ok) throw new Error("Failed to fetch a joke.");
+    
+            const data = await response.json();
+            const joke = `${data.setup} 😂<br><strong>${data.punchline}</strong>`;
+    
+            setTimeout(() => {
+                hideTypingIndicator();
+                addChat(BOT_NAME, BOT_IMG, "left", joke, true);
+            }, 1500);
+        } catch (error) {
+            console.error("Error fetching joke:", error);
+            hideTypingIndicator();
+            addChat(BOT_NAME, BOT_IMG, "left", "Oops! I couldn't fetch a joke right now. Try again later. 😔", true);
+        }
+        return;
+    }
+    
+
     if (nameMatch) {
         let userName = nameMatch[2].trim();
         userName = userName.charAt(0).toUpperCase() + userName.slice(1); // Capitalize first letter
