@@ -406,18 +406,47 @@ inputField.addEventListener("keydown", (event) => {
     }
 });
 function speak(text) {
-    const cleanText = text
+    // Create a temporary div to safely strip HTML tags (especially images)
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = text;
+
+    // Remove all images
+    tempDiv.querySelectorAll("img").forEach(img => img.remove());
+
+    // Extract clean text
+    const cleanText = tempDiv.innerText
         .replace(/https?:\/\/\S+/g, '') // Remove links
         .replace(/[\u{1F600}-\u{1F6FF}]/gu, '') // Remove emojis
-        .replace(/[^a-zA-Z0-9.,!? ]/g, ''); // Remove other special characters
+        .replace(/[\p{Emoji}]/gu, '') // Remove Unicode emojis
+        .replace(/[^\w\s.,!?]/g, '') // Remove unwanted special characters
+        .replace(/\.\.\./g, '') // Remove "..."
+        .replace(/(\s)\./g, '$1') // Fix spaces before dots
+        .replace(/\s+/g, ' ') // Remove extra spaces
+        .trim(); // Trim leading/trailing spaces
+
+    // If no readable text remains, skip speech
+    if (!cleanText) {
+        console.log("No readable text to speak.");
+        return;
+    }
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = "en-US"; // Set language
-    utterance.rate = 1; // Adjust speed (1 is normal)
-    utterance.pitch = 1; // Adjust pitch (1 is normal)
-    speechSynthesis.speak(utterance);
+    utterance.lang = "en-US";
+    utterance.rate = 1;
+    utterance.pitch = 1;
+
+    // Ensure voices are loaded before selecting one
+    const setVoice = () => {
+        const voices = speechSynthesis.getVoices();
+        const googleVoice = voices.find(voice => voice.name.includes("Google UK English Female"));
+        utterance.voice = googleVoice || voices[0]; // Use Google voice if available
+        speechSynthesis.speak(utterance);
+    };
+
+    if (speechSynthesis.getVoices().length === 0) {
+        speechSynthesis.onvoiceschanged = setVoice;
+    } else {
+        setVoice();
+    }
+
 }
-
-
-
-
