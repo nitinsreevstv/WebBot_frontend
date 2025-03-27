@@ -227,9 +227,9 @@ function addChat(name, img, side, text, saveToStorage = true) {
     if (!text.trim()) return;
 
     // Speak the bot's message if it's the bot speaking
-    if (name === "BOT") {
-        speak(text);
-    }
+    // if (name === "BOT") {
+    //     speak(text);
+    // }
 
     const time = formatDate(new Date());
     let userNameStored = localStorage.getItem("userName") || ""; // Get stored name
@@ -448,5 +448,4 @@ function speak(text) {
     } else {
         setVoice();
     }
-
 }
