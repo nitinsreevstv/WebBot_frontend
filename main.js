@@ -1,5 +1,4 @@
-import { fetchCryptoPrice } from './apis.js';
-// import "apis.js";
+import { fetchWikipediaSummary, fetchCryptoPrice } from './apis.js';
 
 const msgerForm = get(".msger-inputarea");
 const msgerInput = get(".msger-input");
@@ -70,28 +69,28 @@ msgerForm.addEventListener("submit", event => {
     output(msgText);
 });
 
-async function fetchWikipediaSummary(query) {
-    const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
+// async function fetchWikipediaSummary(query) {
+//     const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
+//     try {
+//         const response = await fetch(url);
+//         const data = await response.json();
 
-        if (data.extract) {
-            return {
-                title: data.title,
-                extract: data.extract,
-                image: data.thumbnail ? data.thumbnail.source : null,
-                link: data.content_urls.desktop.page
-            };
-        } else {
-            return null;
-        }
-    } catch (error) {
-        console.error("Wikipedia API Error:", error);
-        return null;
-    }
-}
+//         if (data.extract) {
+//             return {
+//                 title: data.title,
+//                 extract: data.extract,
+//                 image: data.thumbnail ? data.thumbnail.source : null,
+//                 link: data.content_urls.desktop.page
+//             };
+//         } else {
+//             return null;
+//         }
+//     } catch (error) {
+//         console.error("Wikipedia API Error:", error);
+//         return null;
+//     }
+// }
 
 async function fetchJoke() {
     try {
