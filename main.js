@@ -1,3 +1,6 @@
+import { fetchCryptoPrice } from './apis.js';
+// import "apis.js";
+
 const msgerForm = get(".msger-inputarea");
 const msgerInput = get(".msger-input");
 const msgerChat = get(".msger-chat");
@@ -192,6 +195,38 @@ async function output(input) {
             return;
         }
     }
+
+    if (text.includes("price of")) {
+        // Extract the coin name by removing "price of" from the text
+        const coin = text.replace("price of", "").trim().toLowerCase();
+    
+        if (!coin) {
+            hideTypingIndicator();
+            addChat(BOT_NAME, BOT_IMG, "left", "Please specify a cryptocurrency name. Example: 'price of Bitcoin'", true);
+            return;
+        }
+    
+        try {
+            const priceMessage = await fetchCryptoPrice(coin);
+    
+            setTimeout(() => {
+                hideTypingIndicator();
+                addChat(BOT_NAME, BOT_IMG, "left", priceMessage, true);
+            }, 1500);
+        } catch (error) {
+            console.error("Error fetching crypto price:", error);
+            hideTypingIndicator();
+            addChat(
+                BOT_NAME, 
+                BOT_IMG, 
+                "left", 
+                "Oops! I couldn't fetch the crypto price right now. Try again later. 💰", 
+                true
+            );
+        }
+        return;
+    }
+    
 
     let product = compare(prompt, replies, text) || getRandomAlternative();
     if (!product) product = "I'm not sure how to respond.";

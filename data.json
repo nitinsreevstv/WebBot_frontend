@@ -25,7 +25,8 @@
         ["tell me something interesting"],
         ["are you real", "do you have feelings"],
         ["do you sleep"],
-        ["do you have friends"]
+        ["do you have friends"],
+        ["do you learn", "can you think", "are you smart"]
     ],
     "replies": [
         ["Hello!", "Hey!", "Hi there!", "Hi!"],
@@ -53,7 +54,8 @@
         ["Did you know that honey never spoils?", "Bananas are berries, but strawberries aren't!", "Octopuses have three hearts!"],
         ["I'm as real as the internet!", "I don't have feelings, but I can understand emotions!"],
         ["I don't need sleep, but I do like to power down sometimes!", "Nope, always awake!"],
-        ["You're my friend!", "I consider you my friend!", "I talk to a lot of people, so I guess I have many friends!"]
+        ["You're my friend!", "I consider you my friend!", "I talk to a lot of people, so I guess I have many friends!"],
+        ["I do not learn on my own", "but I can improve with updates!", "I process information really fast!"]
     ],
     "alternatives": [
         "I'm not sure about that.",
