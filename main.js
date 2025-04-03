@@ -99,6 +99,25 @@ async function output(input) {
         }
         return;
     }
+    // checking for country information
+    if (text.includes("tell me about")) {
+        try {
+            showTypingIndicator(); // Show typing indicator while fetching data
+            let country = text.replace("tell me about ", "").trim();
+    
+            let botResponse = await API.getCountryInfo(country); // Fetch country info
+    
+            setTimeout(() => {
+                hideTypingIndicator(); // Hide typing indicator
+                addChat(BOT_NAME, BOT_IMG, "left", `Here's what I found: 🌍<br>${botResponse}`, true);
+            }, 1500);
+        } catch (error) {
+            console.error("Error fetching country info:", error);
+            hideTypingIndicator();
+            addChat(BOT_NAME, BOT_IMG, "left", "Oops! I couldn't fetch the country info. Try again later. 😔", true);
+        }
+        return;
+    }
     
     if (text.includes("joke") || text.includes("tell me a joke") || text.includes("funny")) {
         try {
@@ -136,7 +155,7 @@ async function output(input) {
     }
 
     // 🔹 Enhanced Wikipedia query detection
-    const wikiPattern = /^(what is|who is|tell me about|define) (.+)/;
+    const wikiPattern = /^(what is|who is|define) (.+)/;
     const match = text.match(wikiPattern);
 
     if (match) {
