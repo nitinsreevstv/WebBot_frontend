@@ -1,4 +1,4 @@
-import { fetchWikipediaSummary, fetchCryptoPrice, fetchJoke } from './apis.js';
+import { fetchWikipediaSummary, fetchCryptoPrice, fetchJoke, fetchFact } from './apis.js';
 
 const msgerForm = get(".msger-inputarea");
 const msgerInput = get(".msger-input");
@@ -84,16 +84,11 @@ async function output(input) {
 
     if (text.includes("fun fact") || text.includes("tell me a fact") || text.includes("random fact")) {
         try {
-            const response = await fetch("https://uselessfacts.jsph.pl/api/v2/facts/random?language=en");
-            
-            if (!response.ok) throw new Error("Failed to fetch fun fact.");
-            
-            const data = await response.json();
-            const fact = data.text;
+            const response = await fetchFact();
     
             setTimeout(() => {
                 hideTypingIndicator();
-                addChat(BOT_NAME, BOT_IMG, "left", `Here's a fun fact: 🤯<br><strong>${fact}</strong>`, true);
+                addChat(BOT_NAME, BOT_IMG, "left", `Here's a fun fact: 🤯<br><strong>${response}</strong>`, true);
             }, 1500);
         } catch (error) {
             console.error("Error fetching fun fact:", error);
