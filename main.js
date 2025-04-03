@@ -1,4 +1,6 @@
-import { fetchWikipediaSummary, fetchCryptoPrice, fetchJoke, fetchFact } from './apis.js';
+// import { fetchWikipediaSummary, fetchCryptoPrice, fetchJoke, fetchFact } from './apis.js';
+
+import * as API from './apis.js';
 
 const msgerForm = get(".msger-inputarea");
 const msgerInput = get(".msger-input");
@@ -84,7 +86,7 @@ async function output(input) {
 
     if (text.includes("fun fact") || text.includes("tell me a fact") || text.includes("random fact")) {
         try {
-            const response = await fetchFact();
+            const response = await API.fetchFact();
     
             setTimeout(() => {
                 hideTypingIndicator();
@@ -100,7 +102,7 @@ async function output(input) {
     
     if (text.includes("joke") || text.includes("tell me a joke") || text.includes("funny")) {
         try {
-            const joke = await fetchJoke(); // Directly fetch the joke
+            const joke = await API.fetchJoke(); // Directly fetch the joke
     
             setTimeout(() => {
                 hideTypingIndicator();
@@ -139,7 +141,7 @@ async function output(input) {
 
     if (match) {
         const query = match[2].trim(); // Extracted topic
-        const wikiData = await fetchWikipediaSummary(query);
+        const wikiData = await API.fetchWikipediaSummary(query);
 
         if (wikiData) {
             let botMessage = `<strong>${wikiData.title}</strong><br>${wikiData.extract}<br><a href="${wikiData.link}" target="_blank">Read more</a>`;
@@ -163,7 +165,7 @@ async function output(input) {
         }
     
         try {
-            const priceMessage = await fetchCryptoPrice(coin);
+            const priceMessage = await API.fetchCryptoPrice(coin);
     
             setTimeout(() => {
                 hideTypingIndicator();
