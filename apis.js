@@ -38,7 +38,7 @@ export async function fetchWikipediaSummary(query) {
     }
 }
 
-export async function fetchJoke(text) {
+export async function fetchJoke() {
     try {
         const response = await fetch("https://official-joke-api.appspot.com/random_joke");
         const data = await response.json();

@@ -105,7 +105,7 @@ async function output(input) {
     
     if (text.includes("joke") || text.includes("tell me a joke") || text.includes("funny")) {
         try {
-            const joke = await fetchJoke(text); // Directly fetch the joke
+            const joke = await fetchJoke(); // Directly fetch the joke
     
             setTimeout(() => {
                 hideTypingIndicator();
