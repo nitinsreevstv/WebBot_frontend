@@ -37,3 +37,14 @@ export async function fetchWikipediaSummary(query) {
         return null;
     }
 }
+
+export async function fetchJoke(text) {
+    try {
+        const response = await fetch("https://official-joke-api.appspot.com/random_joke");
+        const data = await response.json();
+        return `${data.setup} 😂 ${data.punchline}`;
+    } catch (error) {
+        console.error("Joke API Error:", error);
+        return "I tried to find a joke, but my humor module is offline! 🤖";
+    }
+}

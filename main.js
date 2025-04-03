@@ -1,4 +1,4 @@
-import { fetchWikipediaSummary, fetchCryptoPrice } from './apis.js';
+import { fetchWikipediaSummary, fetchCryptoPrice, fetchJoke } from './apis.js';
 
 const msgerForm = get(".msger-inputarea");
 const msgerInput = get(".msger-input");
@@ -69,40 +69,6 @@ msgerForm.addEventListener("submit", event => {
     output(msgText);
 });
 
-// async function fetchWikipediaSummary(query) {
-//     const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
-
-//     try {
-//         const response = await fetch(url);
-//         const data = await response.json();
-
-//         if (data.extract) {
-//             return {
-//                 title: data.title,
-//                 extract: data.extract,
-//                 image: data.thumbnail ? data.thumbnail.source : null,
-//                 link: data.content_urls.desktop.page
-//             };
-//         } else {
-//             return null;
-//         }
-//     } catch (error) {
-//         console.error("Wikipedia API Error:", error);
-//         return null;
-//     }
-// }
-
-async function fetchJoke() {
-    try {
-        const response = await fetch("https://official-joke-api.appspot.com/random_joke");
-        const data = await response.json();
-        return `${data.setup} 😂 ${data.punchline}`;
-    } catch (error) {
-        console.error("Joke API Error:", error);
-        return "I tried to find a joke, but my humor module is offline! 🤖";
-    }
-}
-
 
 async function output(input) {
     let text = input.toLowerCase().trim();
@@ -139,12 +105,7 @@ async function output(input) {
     
     if (text.includes("joke") || text.includes("tell me a joke") || text.includes("funny")) {
         try {
-            const response = await fetch("https://official-joke-api.appspot.com/random_joke");
-    
-            if (!response.ok) throw new Error("Failed to fetch a joke.");
-    
-            const data = await response.json();
-            const joke = `${data.setup} 😂<br><strong>${data.punchline}</strong>`;
+            const joke = await fetchJoke(text); // Directly fetch the joke
     
             setTimeout(() => {
                 hideTypingIndicator();
@@ -157,6 +118,7 @@ async function output(input) {
         }
         return;
     }
+    
     
 
     if (nameMatch) {
